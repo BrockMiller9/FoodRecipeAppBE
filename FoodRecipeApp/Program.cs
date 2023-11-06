@@ -42,8 +42,11 @@ builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.Configure<AppSettings>(Configuration.GetSection("AppSettings"));
 builder.Services.AddScoped<PasswordService>();
 builder.Services.AddScoped<TokenService>();
+builder.Services.AddScoped<RecipeService>();
 //add my service for auto mapper that i just created UserProfile
 builder.Services.AddAutoMapper(typeof(UserProfile));
+
+builder.Services.AddHttpClient<IRecipeService, RecipeService>();
 
 var app = builder.Build();
 

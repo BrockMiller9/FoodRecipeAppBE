@@ -89,5 +89,22 @@ namespace FoodRecipeApp.Controllers
 
         }
 
+
+        [HttpGet("verify-token")]
+        public IActionResult VerifyToken()
+        {
+            var token = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+            bool isValidToken = _tokenService.ValidateToken(token);
+
+            if (isValidToken)
+            {
+                return Ok(new { isValid = true });
+            }
+            else
+            {
+                return Unauthorized(new { isValid = false });
+            }
+        }
+
     }
 }
