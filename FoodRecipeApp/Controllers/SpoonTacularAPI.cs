@@ -38,5 +38,26 @@ namespace FoodRecipeApp.Controllers
             return Ok(recipes);
         }
 
+        [HttpGet("{id}")]
+        public async Task<ActionResult<RecipeIDDTO>> GetRecipeInformation(int id, [FromQuery] bool includeNutrition = false)
+        {
+            try
+            {
+                var recipeInformation = await _recipeService.GetRecipeInformation(id, includeNutrition);
+                return Ok(recipeInformation);
+            }
+            catch (HttpRequestException ex)
+            {
+                // Log the exception message
+                return StatusCode(StatusCodes.Status502BadGateway, "An error occurred while communicating with the external recipe service.");
+            }
+            catch (Exception ex)
+            {
+                // Log the exception
+                return StatusCode(500, "An error occurred while fetching the recipe information.");
+            }
+        }
+
+
     }
 }

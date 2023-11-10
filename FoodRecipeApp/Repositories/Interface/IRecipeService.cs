@@ -7,5 +7,6 @@ namespace FoodRecipeApp.Repositories.Interface
 
         Task<IEnumerable<RecipeDto>> GetRandomRecipes(string tags, int number);
         Task<IEnumerable<RecipeDto>> FindByIngredientsAsync(string ingredients, int number, bool limitLicense, int ranking, bool ignorePantry);
+        Task<RecipeIDDTO> GetRecipeInformation(int id, bool includeNutrition = false);
     }
 }

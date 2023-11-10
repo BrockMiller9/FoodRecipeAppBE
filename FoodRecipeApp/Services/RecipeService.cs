@@ -44,6 +44,22 @@ namespace FoodRecipeApp.Services
             return recipes;
         }
 
+        public async Task<RecipeIDDTO> GetRecipeInformation(int id, bool includeNutrition = false)
+        {
+            var response = await _httpClient.GetAsync($"https://api.spoonacular.com/recipes/{id}/information?includeNutrition={includeNutrition}&apiKey={_spoonacularApiKey}");
+            response.EnsureSuccessStatusCode();
 
+            var content = await response.Content.ReadAsStringAsync();
+            var recipeInfo = JsonConvert.DeserializeObject<RecipeIDDTO>(content);
+            if( recipeInfo == null)
+            {
+                return null;
+            }
+            else
+            {
+                return recipeInfo;
+            }
+           
+        }
     }
 }
