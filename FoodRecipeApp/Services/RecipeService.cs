@@ -44,22 +44,54 @@ namespace FoodRecipeApp.Services
             return recipes;
         }
 
+        //public async Task<RecipeIDDTO> GetRecipeInformation(int id, bool includeNutrition = false)
+        //{
+        //    var response = await _httpClient.GetAsync($"https://api.spoonacular.com/recipes/{id}/information?includeNutrition={includeNutrition}&apiKey={_spoonacularApiKey}");
+        //    response.EnsureSuccessStatusCode();
+
+        //    var content = await response.Content.ReadAsStringAsync();
+        //    var recipeInfo = JsonConvert.DeserializeObject<RecipeIDDTO>(content);
+        //    if( recipeInfo == null)
+        //    {
+        //        return null;
+        //    }
+        //    else
+        //    {
+        //        return recipeInfo;
+        //    }
+
+        //}
+
         public async Task<RecipeIDDTO> GetRecipeInformation(int id, bool includeNutrition = false)
         {
-            var response = await _httpClient.GetAsync($"https://api.spoonacular.com/recipes/{id}/information?includeNutrition={includeNutrition}&apiKey={_spoonacularApiKey}");
+            // Get the recipe information as before
+            var recipeResponse = await _httpClient.GetAsync($"https://api.spoonacular.com/recipes/{id}/information?includeNutrition={includeNutrition}&apiKey={_spoonacularApiKey}");
+            recipeResponse.EnsureSuccessStatusCode();
+            var recipeContent = await recipeResponse.Content.ReadAsStringAsync();
+            var recipeInfo = JsonConvert.DeserializeObject<RecipeIDDTO>(recipeContent);
+
+            // Get the analyzed instructions
+            var instructionsResponse = await _httpClient.GetAsync($"https://api.spoonacular.com/recipes/{id}/analyzedInstructions?apiKey={_spoonacularApiKey}");
+            instructionsResponse.EnsureSuccessStatusCode();
+            var instructionsContent = await instructionsResponse.Content.ReadAsStringAsync();
+            var analyzedInstructions = JsonConvert.DeserializeObject<List<AnalyzedInstruction>>(instructionsContent);
+
+            recipeInfo.AnalyzedInstructions = analyzedInstructions;
+
+            return recipeInfo;
+        }
+
+        public async Task<RecipeSearchResultsDTO> SearchRecipesAsync(string query, int number = 10)
+        {
+            var response = await _httpClient.GetAsync($"https://api.spoonacular.com/recipes/complexSearch?query={query}&number={number}&apiKey={_spoonacularApiKey}");
             response.EnsureSuccessStatusCode();
 
             var content = await response.Content.ReadAsStringAsync();
-            var recipeInfo = JsonConvert.DeserializeObject<RecipeIDDTO>(content);
-            if( recipeInfo == null)
-            {
-                return null;
+            var searchResults = JsonConvert.DeserializeObject<RecipeSearchResultsDTO>(content);
+            
+                return searchResults;
+                   
             }
-            else
-            {
-                return recipeInfo;
-            }
-           
-        }
+
     }
 }

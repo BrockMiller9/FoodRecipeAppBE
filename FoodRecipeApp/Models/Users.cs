@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using FoodRecipeApp.Models;
+using System.ComponentModel.DataAnnotations;
 
 namespace FoodRecipeApp
 {
@@ -21,6 +22,8 @@ namespace FoodRecipeApp
 
         [Required]
         public byte[] PasswordSalt { get; set; }
+
+        public virtual ICollection<UserFavoriteRecipe> UserFavoriteRecipes { get; set; }
 
     }
 }

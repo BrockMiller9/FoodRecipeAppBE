@@ -58,6 +58,21 @@ namespace FoodRecipeApp.Controllers
             }
         }
 
+        [HttpGet("search")]
+        public async Task<IActionResult> SearchRecipes([FromQuery] string query, [FromQuery] int number = 10)
+        {
+            try
+            {
+                var searchResults = await _recipeService.SearchRecipesAsync(query, number);
+                return Ok(searchResults.Results); // We only send back the results array
+            }
+            catch (Exception ex)
+            {
+                // Handle the error appropriately
+                return StatusCode(500, "An error occurred while searching for recipes.");
+            }
+        }
+
 
     }
 }

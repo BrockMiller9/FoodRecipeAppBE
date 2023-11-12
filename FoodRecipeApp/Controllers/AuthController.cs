@@ -61,7 +61,7 @@ namespace FoodRecipeApp.Controllers
             }
 
             string token = _tokenService.GenerateToken(newUser.Id, newUser.Username);
-            return Ok(new { token = token });
+            return Ok(new { token = token, username = newUser.Username });
         }
 
 
@@ -84,7 +84,7 @@ namespace FoodRecipeApp.Controllers
 
             string token = _tokenService.GenerateToken(user.Id, user.Username);
 
-            return Ok(new { token = token });
+            return Ok(new { token = token, username = user.Username });
 
 
         }

@@ -3,10 +3,13 @@ using FoodRecipeApp.Models.Mapping;
 using FoodRecipeApp.Repositories.Interface;
 using FoodRecipeApp.Repositories.Repository;
 using FoodRecipeApp.Services;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
-
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 using System;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -21,9 +24,56 @@ var Configuration = new ConfigurationBuilder()
 
 
 builder.Services.AddControllers();
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+})
+.AddJwtBearer(options =>
+{
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        // Your token validation parameters like issuer, audience, and signing key
+        ValidateIssuerSigningKey = true,
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(Configuration["AppSettings:TokenSecret"])),
+        ValidateIssuer = false,
+        ValidateAudience = false
+    };
+});
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(options =>
+{
+    // Other Swagger configurations...
+
+    // Define the OAuth2.0 scheme that's in use (i.e. Implicit Flow)
+    options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    {
+        Description = "JWT Authorization header using the Bearer scheme (Example: 'Bearer 12345abcdef')",
+        Name = "Authorization",
+        In = ParameterLocation.Header,
+        Type = SecuritySchemeType.ApiKey,
+        Scheme = "Bearer"
+    });
+
+    options.AddSecurityRequirement(new OpenApiSecurityRequirement()
+    {
+        {
+            new OpenApiSecurityScheme
+            {
+                Reference = new OpenApiReference
+                {
+                    Type = ReferenceType.SecurityScheme,
+                    Id = "Bearer"
+                },
+                Scheme = "oauth2",
+                Name = "Bearer",
+                In = ParameterLocation.Header
+            },
+            new List<string>()
+        }
+    });
+});
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
@@ -47,6 +97,9 @@ builder.Services.AddScoped<RecipeService>();
 builder.Services.AddAutoMapper(typeof(UserProfile));
 
 builder.Services.AddHttpClient<IRecipeService, RecipeService>();
+builder.Services.AddScoped<IFavoriteRepository, FavoriteRepository>();
+
+
 
 var app = builder.Build();
 
@@ -58,10 +111,13 @@ if (app.Environment.IsDevelopment())
 }
 
 //app.UseHttpsRedirection();
+app.UseCors("MyAllowSpecificOrigins");
+
+app.UseAuthentication();
 
 app.UseAuthorization();
 
-app.UseCors("MyAllowSpecificOrigins");
+
 
 app.MapControllers();
 

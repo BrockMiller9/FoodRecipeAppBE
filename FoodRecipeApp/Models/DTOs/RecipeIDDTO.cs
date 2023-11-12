@@ -20,6 +20,8 @@
         public List<ExtendedIngredient> ExtendedIngredients { get; set; }
         public string Summary { get; set; }
 
+        public List<AnalyzedInstruction> AnalyzedInstructions { get; set; }
+
     }
 
 }
