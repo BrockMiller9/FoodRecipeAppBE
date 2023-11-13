@@ -74,9 +74,12 @@ builder.Services.AddSwaggerGen(options =>
         }
     });
 });
+//builder.Services.AddDbContext<AppDbContext>(options =>
+//    options.UseNpgsql(Environment.GetEnvironmentVariable("CONNECTION_STRING") ??
+//    "Host=dpg-cl8ok0f6e7vc73a8fp90-a;Port=5432;Database=fooddatabase;Username=fooddatabase_user;Password=OGuVtQrPeEPxrzPKymdyxTmyLnkRVfyh;SSL Mode=Require;Trust Server Certificate=true;"));
+
 builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseNpgsql(Environment.GetEnvironmentVariable("CONNECTION_STRING") ??
-    "Host=dpg-cl8ok0f6e7vc73a8fp90-a;Port=5432;Database=fooddatabase;Username=fooddatabase_user;Password=OGuVtQrPeEPxrzPKymdyxTmyLnkRVfyh;SSL Mode=Require;Trust Server Certificate=true;"));
+    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 builder.Services.AddCors(options =>
 {
