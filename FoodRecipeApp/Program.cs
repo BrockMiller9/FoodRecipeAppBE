@@ -86,7 +86,7 @@ builder.Services.AddCors(options =>
     options.AddPolicy(name: "MyAllowSpecificOrigins",
                       builder =>
                       {
-                          builder.WithOrigins("http://localhost:4200") // Adjust this if your Angular app is running on a different port
+                          builder.WithOrigins("https://foodcreationist.onrender.com") // Adjust this if your Angular app is running on a different port
                                 .AllowAnyHeader()
                                 .AllowAnyMethod();
                       });
